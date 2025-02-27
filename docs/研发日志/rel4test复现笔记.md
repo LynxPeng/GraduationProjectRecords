@@ -102,7 +102,7 @@ make install
 >
 >  悬空指针警告导致编译报错 cc1: all warnings being treated as errors
 >
->  ![image-20250226083903612](D:/Library/picture/Typora/image-20250226083903612.png)
+>  ![image-20250226083903612](https://s3.bmp.ovh/imgs/2025/02/27/c89051184832e2cb.png)
 >
 >  警告被当成错误处理，需要在./configure中添加参数--disable-werror
 
@@ -346,7 +346,7 @@ rel4test/rel4_kernel/build
 >
 >找不到指令
 >
->![image-20250226094810089](D:/Library/picture/Typora/image-20250226094810089.png)
+>![image-20250226094810089](https://s3.bmp.ovh/imgs/2025/02/27/488059e96903ecf3.png)
 >
 >**解决办法：**rust版本不能低于rustc 1.71.0-nightly(9ecda8de8 2023-04-30)
 >
@@ -354,7 +354,7 @@ rel4test/rel4_kernel/build
 
 >  [!WARNING]
 >
->![image-20250226094938999](D:/Library/picture/Typora/image-20250226094938999.png)
+>![image-20250226094938999](https://s3.bmp.ovh/imgs/2025/02/27/5fd4013fdd7f4349.png)
 >
 >**解决办法：**sel4test checkout到2b63c9183a7aae707004afdbd3157b41aeb3ae7e
 
@@ -362,15 +362,15 @@ rel4test/rel4_kernel/build
 >
 >riscv gcc找不到模块
 >
->![image-20250226095149977](D:/Library/picture/Typora/image-20250226095149977.png)
+>![image-20250226095149977](D:/Library/picture/Typora/e500f11ddcb6ba87.png)
 >
 >**解决办法：**卸载apt安装的/直接下载的编译器，riscv64-unknown-linux-gnu换成本地编译的。
 
->​    [!WARNING]
+>   [!WARNING]
 >
 >运行测试卡在Initializing PLIC...
 >
->![image-20250226095416948](D:/Library/picture/Typora/image-20250226095416948.png)
+>![image-20250226095416948](D:/Library/picture/Typora/4dc450fe8f735348.png)
 >
 >**解决办法：**卸载ubuntu自带的qemu，改为本地编译的qemu
 
@@ -425,16 +425,10 @@ export SEL4_PREFIX=/root/rel4/rel4test/kernel/install
 >
 >build rust-root-task-demo失败
 >
->![image-20250226095756372](D:/Library/picture/Typora/image-20250226095756372.png)
+>![image-20250226095756372](D:/Library/picture/Typora/055fd0c08907ba24.png)
 >
 >**解决办法：**
 >
 >​	1. 在rust-root-task-demo中build，检查rust-root-task-demo代码是否有报错
 >
 >2. 检查环境变量和头文件安装
-
-
-
-/root/taic/taic-qemu/build/qemu-system-riscv64  -machine virt -cpu rv64 -nographic -serial mon:stdio -m size=4095M -bios default -kernel images/example-image-riscv-spike  -smp 4
-
-../taic-qemu/build/qemu-system-riscv64 -m 2G -smp 1 -machine virt -bios default -kernel apps/enq_deq_test/enq_deq_test_riscv64-qemu-virt.bin -nographic
