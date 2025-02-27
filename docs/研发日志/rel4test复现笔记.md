@@ -362,15 +362,15 @@ rel4test/rel4_kernel/build
 >
 >riscv gcc找不到模块
 >
->![image-20250226095149977](D:/Library/picture/Typora/e500f11ddcb6ba87.png)
+>![image-20250226095149977](https://s3.bmp.ovh/imgs/2025/02/27/e500f11ddcb6ba87.png)
 >
 >**解决办法：**卸载apt安装的/直接下载的编译器，riscv64-unknown-linux-gnu换成本地编译的。
 
->   [!WARNING]
+>​    [!WARNING]
 >
 >运行测试卡在Initializing PLIC...
 >
->![image-20250226095416948](D:/Library/picture/Typora/4dc450fe8f735348.png)
+>![image-20250226095416948](https://s3.bmp.ovh/imgs/2025/02/27/4dc450fe8f735348.png)
 >
 >**解决办法：**卸载ubuntu自带的qemu，改为本地编译的qemu
 
@@ -425,7 +425,7 @@ export SEL4_PREFIX=/root/rel4/rel4test/kernel/install
 >
 >build rust-root-task-demo失败
 >
->![image-20250226095756372](D:/Library/picture/Typora/055fd0c08907ba24.png)
+>![image-20250226095756372](https://s3.bmp.ovh/imgs/2025/02/27/055fd0c08907ba24.png)
 >
 >**解决办法：**
 >
