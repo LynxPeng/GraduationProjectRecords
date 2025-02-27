@@ -1,1 +1,1 @@
-# Owner-avatar-GraduationProjectRecords
+# GraduationProjectRecords
