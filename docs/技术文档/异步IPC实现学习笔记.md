@@ -412,3 +412,7 @@ pub fn async_syscall_test(bootinfo: &sel4::BootInfo) -> sel4::Result<!> {
 }
 ```
 
+### 存在问题
+
+- 为什么taic下，每次发送/接收都需要 register_receiver和register_send。
+- 如果将异步系统调用改成taic，怎么验证capability。
