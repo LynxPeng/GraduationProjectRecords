@@ -412,6 +412,147 @@ pub fn async_syscall_test(bootinfo: &sel4::BootInfo) -> sel4::Result<!> {
 }
 ```
 
+### rust-sel4
+
+实际执行系统调用的函数 （发送和接收）
+
+```rust
+pub fn sys_send_recv(
+    sys: c_int,
+    dest: seL4_Word,
+    info_arg: seL4_MessageInfo,
+    in_out_mr0: &mut seL4_Word,
+    in_out_mr1: &mut seL4_Word,
+    in_out_mr2: &mut seL4_Word,
+    in_out_mr3: &mut seL4_Word,
+    reply: seL4_Word,
+) -> (seL4_MessageInfo, seL4_Word) {
+    let out_info: seL4_Word;
+    let out_badge: seL4_Word;
+    unsafe {
+        asm!("ecall",
+            in("a7") sys_id_to_word(sys),
+            inout("a0") dest => out_badge,
+            inout("a1") info_arg.into_word() => out_info,
+            inout("a2") *in_out_mr0,
+            inout("a3") *in_out_mr1,
+            inout("a4") *in_out_mr2,
+            inout("a5") *in_out_mr3,
+            in("a6") reply,
+        );
+    }
+    (seL4_MessageInfo::from_word(out_info), out_badge)
+}
+```
+
+上边函数的简单封装，系统调用的简单版
+
+```rust
+fn sys_send_recv_simple(sys_id: c_int, arg: seL4_Word) -> seL4_Word {
+    let mut mr0 = 0;
+    let mut mr1 = 0;
+    let mut mr2 = 0;
+    let mut mr3 = 0;
+
+    let (_msg_info, ret) = sys_send_recv(
+        sys_id,
+        arg,
+        seL4_MessageInfo::new(0, 0, 0, 0),
+        &mut mr0,
+        &mut mr1,
+        &mut mr2,
+        &mut mr3,
+        UNUSED_REPLY_ARG,
+    );
+
+    ret
+}
+```
+
+```rust
+#[cfg(feature = "ENABLE_UINTC")]
+fn wake_syscall_handler() {
+    // debug!("wake_syscall_handler: enter");
+if let Some(cid) = get_currenct_thread().asyncSysHandlerCid {
+        // debug!("wake_syscall_handler: current thread's handler cid: {:?}", cid);
+        coroutine_wake(&cid);
+        if let Some(idle_cpu) = get_idle_cpu_index(get_currenct_thread().tcbPriority) {
+            // send ipi
+            let mask: usize = 1 << idle_cpu;
+            unsafe {
+                ipi_send_mask(INTERRUPT_IPI_2 as usize, mask, false);
+            }
+        }
+    }
+}
+```
+
+```rust
+#[no_mangle]
+pub fn slowpath(syscall: usize) {
+    // debug!("enter slow path: {}", syscall as isize);
+    if (syscall as isize) < -8 || (syscall as isize) > -1 {
+        if (syscall as isize) == SysWakeSyscallHandler {
+            #[cfg(feature = "ENABLE_UINTC")]
+            wake_syscall_handler();
+        } else {
+            unsafe {
+                handleUnknownSyscall(syscall);
+            }            
+        }
+    } else {
+        handleSyscall(syscall);
+    }
+    restore_user_context();
+}
+```
+
+run_time是针对线程的。一个线程有一个自己的run_time来管理下面的协程
+
+notification机制 | buffer | queue	
+
+异步IPC发送的那个东西是notification。
+
+异步系统调用只有一个从系统到用户态的notification。
+
+异步IPC：
+
+主线程（服务端线程）
+
+	- 处理函数协程
+
+发送函数所在的一个子线程
+
+- 发送协程
+
+有一个local queue
+
+系统调用之前要先注册异步系统调用。
+
+​	内核生成一个异步系统调用处理协程。
+
+​	绑在taic当前线程的local queue的63号上。
+
+进行系统调用就是写buffer（IPC ITEM）
+
+```rust
+cid就是发起异步系统调用的写成的cid
+```
+
+// todo
+
+非法ntfn问题
+
+buffer ptr
+
+内核态的调度问题
+
+​	给taic发信号，激活这个协程。
+
+
+
+
+
 ### 存在问题
 
 - 为什么taic下，每次发送/接收都需要 register_receiver和register_send。
