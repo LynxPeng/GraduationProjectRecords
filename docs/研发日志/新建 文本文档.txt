@@ -1,0 +1,13 @@
+rel4 kernel>src>common>sel4_config.rs
+74
+#[cfg(feature ="ENABLE SMP")]
+pub const CONFIG MAX NUM NODES:usize =2;
+
+
+projects>rust-root-task-demo>easy-settings.cmake
+5
+Set(NUM NODES 2 CACHE STRING "(if SMP)the number of nodes(default 4)")
+
+tools>seL4>elfloader-tool>src>arch-risk>crto.S>
+60
+jal clear bss
